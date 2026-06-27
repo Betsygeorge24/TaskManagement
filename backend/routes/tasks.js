@@ -3,6 +3,14 @@ const Task = require('../models/Task');
 const { protect } = require('../middleware/auth');
 const router = express.Router();
 
+const isTaskEditableByUser = (task, userId) => {
+  const currentUserId = userId?.toString();
+  return (
+    task.createdBy?.toString() === currentUserId ||
+    task.assignedTo?.toString() === currentUserId
+  );
+};
+
 router.use(protect);
 
 router.get('/', async (req, res) => {
@@ -39,6 +47,10 @@ router.put('/:id', async (req, res) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
+    if (!isTaskEditableByUser(task, req.user._id)) {
+      return res.status(403).json({ message: 'Not authorized to update this task' });
+    }
+
     const { title, description, status, assignedTo, dueDate } = req.body;
     task.title = title || task.title;
     task.description = description || task.description;
@@ -55,9 +67,14 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.id);
-    if (!deletedTask) return res.status(404).json({ message: 'Task not found' });
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
+    if (!isTaskEditableByUser(task, req.user._id)) {
+      return res.status(403).json({ message: 'Not authorized to delete this task' });
+    }
+
+    const deletedTask = await Task.findByIdAndDelete(req.params.id);
     res.json({ message: 'Task deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Unable to delete task', error: error.message });
@@ -65,3 +82,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.isTaskEditableByUser = isTaskEditableByUser;
