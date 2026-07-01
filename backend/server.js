@@ -9,11 +9,10 @@ const app = express();
 
 
 app.use(cors({
-  origin: "https://taskmanagement-system-ld84te400-betsy-george-s-projects.vercel.app",
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
-
 
 app.options("*", cors());
 
