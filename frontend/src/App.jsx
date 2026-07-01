@@ -218,14 +218,36 @@ function App() {
                     Assigned to: {task.assignedTo?.name || 'Unassigned'}
                   </p>
                   <div className="task-actions">
-                    <select value={task.status} onChange={(e) => handleStatusChange(task, e.target.value)}>
-                      <option value="todo">To Do</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="done">Done</option>
-                    </select>
-                    <button className="danger" onClick={() => handleDelete(task._id)}>
-                      Delete
-                    </button>
+                    {(() => {
+                      const currentUserId = user?._id?.toString();
+                      const createdById = task.createdBy?._id?.toString();
+                      const assignedToId = task.assignedTo?._id?.toString();
+                      const canEdit = currentUserId && (currentUserId === createdById || currentUserId === assignedToId);
+
+                      return (
+                        <>
+                          <select
+                            value={task.status}
+                            onChange={(e) => handleStatusChange(task, e.target.value)}
+                            disabled={!canEdit}
+                          >
+                            <option value="todo">To Do</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="done">Done</option>
+                          </select>
+
+                          {canEdit ? (
+                            <button className="danger" onClick={() => handleDelete(task._id)}>
+                              Delete
+                            </button>
+                          ) : (
+                            <button className="danger" disabled title="Only creator or assignee can modify">
+                              Delete
+                            </button>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </article>
               ))}
