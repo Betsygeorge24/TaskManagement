@@ -240,11 +240,7 @@ function App() {
                             <button className="danger" onClick={() => handleDelete(task._id)}>
                               Delete
                             </button>
-                          ) : (
-                            <button className="danger" disabled title="Only creator or assignee can modify">
-                              Delete
-                            </button>
-                          )}
+                          ) : null}
                         </>
                       );
                     })()}
