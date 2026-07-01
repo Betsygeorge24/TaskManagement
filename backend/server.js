@@ -7,14 +7,15 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/users', require('./routes/users'));
 
-app.get('/', (req, res) => res.send({ message: 'Task Management API' }));
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+app.get('/', (req, res) => res.send({ message: 'Task Management API', status: 'ok' }));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
