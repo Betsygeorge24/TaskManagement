@@ -7,33 +7,28 @@ dotenv.config();
 
 const app = express();
 
-// 🔥 MUST be FIRST middleware
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://taskmanagement-system-ihknxgokt-betsy-george-s-projects.vercel.app"
-  ],
+  origin: "https://taskmanagement-system-ld84te400-betsy-george-s-projects.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// Handle preflight
+
 app.options("*", cors());
 
-// Middleware
 app.use(express.json());
 
-// DB connection
 connectDB();
 
-// Routes
+/* Routes */
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/tasks", require("./routes/tasks"));
 app.use("/api/users", require("./routes/users"));
 
-// Health check
+/* Health check */
 app.get("/", (req, res) => {
-  res.json({ message: "Task Management API", status: "ok" });
+  res.json({ message: "Task Management API" });
 });
 
 const PORT = process.env.PORT || 5000;
